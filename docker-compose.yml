@@ -42,17 +42,20 @@ services:
     restart: always
     build: ./app
     environment:
+      - POSTGRES_USER=zotero
+      - POSTGRES_PASS=zotero
+      - ZOTERO_ADMIN_USER=zotero
+      - ZOTERO_ADMIN_PASS=zotero
+      - AWS_BUCKET_USER=zotero
+      - AWS_BUCKET_PASS=zotero
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
-      - AWS_RUN_USER=www-data
-      - AWS_RUN_PASS=www-data
     ports:
       - "6080:80"
     volumes:
       - "./dataserver/:/var/www/zotero:rw"
       - "./config/config.inc.php:/var/www/zotero/include/config/config.inc.php:ro"
       - "./config/dbconnect.inc.php:/var/www/zotero/include/config/dbconnect.inc.php:ro"
-      - "./config/default.js:/var/www/zotero/stream-server/config/default.js:ro"
     depends_on:
       - composer
       - db
@@ -70,12 +73,12 @@ services:
     restart: always
     build: ./stream
     ports:
-      - "6081:80"
-    volumes:
-      - "./config/default.js:/var/www/zotero/stream-server/config/default.js:ro"
+      - "6081:8080"
     depends_on:
       - app
+      - redis
     links:
       - app
+      - redis
 
 
