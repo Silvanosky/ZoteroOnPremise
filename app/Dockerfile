@@ -2,14 +2,12 @@ FROM php:7.4-apache
 
 RUN apt-get update && apt-get install -y \
         npm \
-        nodejs 
+        nodejs
 
-RUN docker-php-ext-install \
-	mysqli \
-	pdo_pgsql \
-	pdo_mysql \
-	json \
-	intl 
+#Install Postgre PDO
+RUN apt-get install -y libpq-dev \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install pdo pdo_pgsql pgsql
 
 # Install Redis
 RUN pecl install redis \
@@ -17,10 +15,11 @@ RUN pecl install redis \
 	
 # Igbinary module
 RUN pecl install igbinary \
-    && docker-php-ext-enable igbinary \
+    && docker-php-ext-enable igbinary
 
 # Setup Memcached
-RUN pecl install memcached \
+RUN apt-get install -y libmemcached-dev zlib1g-dev \
+    && pecl install memcached-3.1.4 \
     && docker-php-ext-enable memcached
 
 # HTTP_Request2
