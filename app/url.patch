@@ -1,0 +1,13 @@
+diff --git a/model/Storage.inc.php b/model/Storage.inc.php
+index e0e71eb..06e857a 100644
+--- a/model/Storage.inc.php
++++ b/model/Storage.inc.php
+@@ -302,7 +302,7 @@ class Zotero_Storage {
+ 	
+ 	
+ 	public static function getUploadBaseURL() {
+-		return "https://" . Z_CONFIG::$S3_BUCKET . ".s3.amazonaws.com/";
++		return "https://" . Z_CONFIG::$S3_ENDPOINT . "/" . Z_CONFIG::$S3_BUCKET;
+ 	}
+ 	
+ 	

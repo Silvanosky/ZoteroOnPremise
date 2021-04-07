@@ -1,0 +1,65 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD: password
+    volumes:
+      - "./postgres/:/var/lib/postgresql/data"
+
+  #Todo make it usefull
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.0
+    environment:
+      - cluster.name=zotero
+      - xpack.security.enabled=false
+
+  redis:
+     image: redis:latest
+
+  memcached:
+     image: memcached:latest
+
+  minio:
+    image: minio/minio
+    environment:
+      - MINIO_ACCESS_KEY=zotero
+      - MINIO_SECRET_KEY=zoterodocker
+    volumes:
+      - "./s3/:/data"
+    command: server /data
+
+  #Install composer php dependancies in vendor
+  composer:
+    image: composer/composer
+    restart: 'no'
+    command: install
+    volumes:
+      - ./dataserver:/app
+
+  app:
+    restart: always
+    build: ./app
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+    ports:
+      - "6080:80"
+    volumes:
+      - "./dataserver/:/var/www/zotero:rw"
+      - "./config/config.inc.php:/var/www/zotero/include/config/config.inc.php:ro"
+      - "./config/dbconnect.inc.php:/var/www/zotero/include/config/dbconnect.inc.php:ro"
+      - "./config/default.js:/var/www/zotero/stream-server/config/default.js:ro"
+    depends_on:
+      - composer
+      - db
+      - redis
+      - memcached 
+      - elasticsearch
+    links:
+      - db
+      - elasticsearch
+      - redis
+      - memcached
+      - minio
