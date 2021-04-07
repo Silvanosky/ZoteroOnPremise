@@ -1,6 +1,6 @@
 [submodule "dataserver"]
 	path = dataserver
 	url = https://github.com/zotero/dataserver.git
-[submodule "stream-server"]
-	path = stream-server
+[submodule "stream/stream-server"]
+	path = stream/stream-server
 	url = https://github.com/zotero/stream-server.git
